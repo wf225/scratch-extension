@@ -293,11 +293,7 @@ class Scratch3PenBlocks {
                 {
                     opcode: 'clear',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'pen.clear',
-                        default: 'erase all 2',
-                        description: 'erase all pen trails and stamps'
-                    })
+                    text: 'erase all 2'
                 },
                 {
                     opcode: 'stamp',

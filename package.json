@@ -1,0 +1,16 @@
+{
+  "name": "scratch-gui-acad",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "lerna run build",
+    "start": "cd ./packages/scratch-gui && npm run start"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lerna": "^2.8.0"
+  }
+}

@@ -41,8 +41,8 @@ const ColorParam = {
  * @param {Runtime} runtime - the runtime instantiating this block package.
  * @constructor
  */
-class Scratch3PenBlocks {
-    constructor (runtime) {
+class Scratch3AcadWebBlocks {
+    constructor(runtime) {
         /**
          * The runtime instantiating this block package.
          * @type {Runtime}
@@ -74,7 +74,7 @@ class Scratch3PenBlocks {
      * The default pen state, to be used when a target has no existing pen state.
      * @type {PenState}
      */
-    static get DEFAULT_PEN_STATE () {
+    static get DEFAULT_PEN_STATE() {
         return {
             penDown: false,
             color: 66.66,
@@ -96,26 +96,107 @@ class Scratch3PenBlocks {
      * off-stage sprite can fill it.
      * @type {{min: number, max: number}}
      */
-    static get PEN_SIZE_RANGE () {
-        return {min: 1, max: 1200};
+    static get PEN_SIZE_RANGE() {
+        return { min: 1, max: 1200 };
     }
 
     /**
      * The key to load & store a target's pen-related state.
      * @type {string}
      */
-    static get STATE_KEY () {
+    static get STATE_KEY() {
         return 'Scratch.pen';
     }
 
-    
+    /**
+     * Clamp a pen size value to the range allowed by the pen.
+     * @param {number} requestedSize - the requested pen size.
+     * @returns {number} the clamped size.
+     * @private
+     */
+    _clampPenSize(requestedSize) {
+        return MathUtil.clamp(
+            requestedSize,
+            Scratch3AcadWebBlocks.PEN_SIZE_RANGE.min,
+            Scratch3AcadWebBlocks.PEN_SIZE_RANGE.max
+        );
+    }
+
+    /**
+     * Retrieve the ID of the renderer "Skin" corresponding to the pen layer. If
+     * the pen Skin doesn't yet exist, create it.
+     * @returns {int} the Skin ID of the pen layer, or -1 on failure.
+     * @private
+     */
+    _getPenLayerID () {
+        if (this._penSkinId < 0 && this.runtime.renderer) {
+            this._penSkinId = this.runtime.renderer.createPenSkin();
+            this._penDrawableId = this.runtime.renderer.createDrawable(StageLayering.PEN_LAYER);
+            this.runtime.renderer.updateDrawableProperties(this._penDrawableId, { skinId: this._penSkinId });
+        }
+        return this._penSkinId;
+    }
+
+    /**
+     * @param {Target} target - collect pen state for this target. Probably, but not necessarily, a RenderedTarget.
+     * @returns {PenState} the mutable pen state associated with that target. This will be created if necessary.
+     * @private
+     */
+    _getPenState(target) {
+        let penState = target.getCustomState(Scratch3AcadWebBlocks.STATE_KEY);
+        if (!penState) {
+            penState = Clone.simple(Scratch3AcadWebBlocks.DEFAULT_PEN_STATE);
+            target.setCustomState(Scratch3AcadWebBlocks.STATE_KEY, penState);
+        }
+        return penState;
+    }
+
+    /**
+     * When a pen-using Target is cloned, clone the pen state.
+     * @param {Target} newTarget - the newly created target.
+     * @param {Target} [sourceTarget] - the target used as a source for the new clone, if any.
+     * @listens Runtime#event:targetWasCreated
+     * @private
+     */
+    _onTargetCreated(newTarget, sourceTarget) {
+        if (sourceTarget) {
+            const penState = sourceTarget.getCustomState(Scratch3AcadWebBlocks.STATE_KEY);
+            if (penState) {
+                newTarget.setCustomState(Scratch3AcadWebBlocks.STATE_KEY, Clone.simple(penState));
+                if (penState.penDown) {
+                    newTarget.addListener(RenderedTarget.EVENT_TARGET_MOVED, this._onTargetMoved);
+                }
+            }
+        }
+    }
+
+    /**
+     * Handle a target which has moved. This only fires when the pen is down.
+     * @param {RenderedTarget} target - the target which has moved.
+     * @param {number} oldX - the previous X position.
+     * @param {number} oldY - the previous Y position.
+     * @param {boolean} isForce - whether the movement was forced.
+     * @private
+     */
+    _onTargetMoved(target, oldX, oldY, isForce) {
+        // Only move the pen if the movement isn't forced (ie. dragged).
+        if (!isForce) {
+            const penSkinId = this._getPenLayerID();
+            if (penSkinId >= 0) {
+                const penState = this._getPenState(target);
+                this.runtime.renderer.penLine(penSkinId, penState.penAttributes, oldX, oldY, target.x, target.y);
+                this.runtime.requestRedraw();
+            }
+        }
+    }
+
     /**
      * Wrap a color input into the range (0,100).
      * @param {number} value - the value to be wrapped.
      * @returns {number} the wrapped value.
      * @private
      */
-    _wrapColor (value) {
+    _wrapColor(value) {
         return MathUtil.wrapClamp(value, 0, 100);
     }
 
@@ -124,7 +205,7 @@ class Scratch3PenBlocks {
      * @returns {array} of the localized text and values for each menu element
      * @private
      */
-    _initColorParam () {
+    _initColorParam() {
         return [
             {
                 text: formatMessage({
@@ -168,7 +249,7 @@ class Scratch3PenBlocks {
      * @returns {number} the clamped value.
      * @private
      */
-    _clampColorParam (value) {
+    _clampColorParam(value) {
         return MathUtil.clamp(value, 0, 100);
     }
 
@@ -180,7 +261,7 @@ class Scratch3PenBlocks {
      * @returns {number} the transparency value.
      * @private
      */
-    _alphaToTransparency (alpha) {
+    _alphaToTransparency(alpha) {
         return (1.0 - alpha) * 100.0;
     }
 
@@ -192,31 +273,23 @@ class Scratch3PenBlocks {
      * @returns {number} the alpha value.
      * @private
      */
-    _transparencyToAlpha (transparency) {
+    _transparencyToAlpha(transparency) {
         return 1.0 - (transparency / 100.0);
     }
 
     /**
      * @returns {object} metadata for this extension and its blocks.
      */
-    getInfo () {
+    getInfo() {
         return {
             id: 'acadweb',
-            name: formatMessage({
-                id: 'acadweb.categoryName',
-                default: 'Pen',
-                description: 'Label for the pen extension category'
-            }),
+            name: 'Pen',
             blockIconURI: blockIconURI,
             blocks: [
                 {
                     opcode: 'drawALine',
                     blockType: BlockType.COMMAND,
-                    text: formatMessage({
-                        id: 'acadweb.draw',
-                        default: 'draw a line',
-                        description: 'draw a line'
-                    })
+                    text: 'draw a line'
                 }
             ],
             menus: {
@@ -229,11 +302,22 @@ class Scratch3PenBlocks {
     /**
      * Draw a line
      */
-    drawALine (args, util) {
+    drawALine(args, util) {
         console.log("draw a line");
 
     }
 
+    /**
+     * The pen "clear" block clears the pen layer's contents.
+     */
+    clear () {
+        const penSkinId = this._getPenLayerID();
+        if (penSkinId >= 0) {
+            this.runtime.renderer.penClear(penSkinId);
+            this.runtime.requestRedraw();
+        }
+    }
+
 }
 
-module.exports = Scratch3PenBlocks;
+module.exports = Scratch3AcadWebBlocks;

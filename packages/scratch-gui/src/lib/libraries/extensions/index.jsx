@@ -67,6 +67,14 @@ export default [
         featured: true
     },
     {
+        name: 'acad-web',
+        extensionId: 'acadweb',
+        iconURL: penImage,
+        insetIconURL: penInsetImage,
+        description: 'acad-web with scratch',
+        featured: true
+    },
+    {
         name: (
             <FormattedMessage
                 defaultMessage="Video Sensing"

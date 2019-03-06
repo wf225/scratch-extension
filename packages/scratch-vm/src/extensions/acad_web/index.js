@@ -313,6 +313,29 @@ class Scratch3AcadWebBlocks {
                             defaultValue: 10
                         }
                     }
+                },
+                {
+                    opcode: 'drawACircle',
+                    blockType: BlockType.COMMAND,
+                    text: {
+                        id: 'acadweb.drawCircle',
+                        default: 'draw a circle centerX [centerX], centerY [centerY], radius [radius]',
+                        description: 'set the enterX, centerY, radius'
+                    },
+                    arguments: {
+                        centerX: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        centerY: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 0
+                        },
+                        radius: {
+                            type: ArgumentType.NUMBER,
+                            defaultValue: 20
+                        }
+                    }
                 }
             ],
             menus: {
@@ -333,7 +356,17 @@ class Scratch3AcadWebBlocks {
         console.log('endY: ' + args.endY);
 
     }
+    /**
+     * Draw a circle
+     */
+    drawACircle(args, util) {
+        console.log('draw a circle');
+        console.log('centerX: ' + args.centerX);
+        console.log('centerY: ' + args.centerY);
+        console.log('radius: ' + args.radius);
+        
 
+    }
     /**
      * The pen "clear" block clears the pen layer's contents.
      */

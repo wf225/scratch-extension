@@ -4,7 +4,9 @@ import {FormattedMessage} from 'react-intl';
 import musicImage from './music.png';
 import musicInsetImage from './music-small.svg';
 import penImage from './pen.png';
-import penInsetImage from './pen-small.svg';
+import penInsertImage from './pen-small.svg';
+import acadwebImage from './web-acad-1024.jpg';
+import acadwebInsertImage from './image2vector.svg';
 import videoImage from './video-sensing.png';
 import videoInsetImage from './video-sensing-small.svg';
 import translateImage from './translate.png';
@@ -26,7 +28,7 @@ import wedoMenuImage from './peripheral-connection/wedo/wedo-small.svg';
 import wedoButtonImage from './peripheral-connection/wedo/wedo-button-illustration.svg';
 
 export default [
-    {
+    /*{
         name: (
             <FormattedMessage
                 defaultMessage="Music"
@@ -56,7 +58,7 @@ export default [
         ),
         extensionId: 'pen',
         iconURL: penImage,
-        insetIconURL: penInsetImage,
+        insetIconURL: penInsertImage,
         description: (
             <FormattedMessage
                 defaultMessage="Draw with your sprites."
@@ -65,15 +67,15 @@ export default [
             />
         ),
         featured: true
-    },
+    },*/
     {
         name: 'acad-web',
         extensionId: 'acadweb',
-        iconURL: penImage,
-        insetIconURL: penInsetImage,
+        iconURL: acadwebImage,
+        insetIconURL: acadwebInsertImage,
         description: 'acad-web with scratch',
         featured: true
-    },
+    }/*,
     {
         name: (
             <FormattedMessage
@@ -241,5 +243,5 @@ export default [
         ),
         helpLink: 'https://scratch.mit.edu/wedo'
 
-    }
+    } */
 ];

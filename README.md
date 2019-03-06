@@ -1,6 +1,7 @@
 ## How to run
 
 ```
+npm install lerna -g
 npm install
 lerna bootstrap
 npm run build

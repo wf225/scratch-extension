@@ -129,7 +129,7 @@ class Scratch3AcadWebBlocks {
      * @returns {int} the Skin ID of the pen layer, or -1 on failure.
      * @private
      */
-    _getPenLayerID () {
+    _getPenLayerID() {
         if (this._penSkinId < 0 && this.runtime.renderer) {
             this._penSkinId = this.runtime.renderer.createPenSkin();
             this._penDrawableId = this.runtime.renderer.createDrawable(StageLayering.PEN_LAYER);
@@ -326,18 +326,26 @@ class Scratch3AcadWebBlocks {
      * Draw a line
      */
     drawALine(args, util) {
-        console.log('draw a line---------------------');
-        console.log('startX: ' + args.startX);
-        console.log('startY: ' + args.startY);
-        console.log('endX: ' + args.endX);
-        console.log('endY: ' + args.endY);
+        console.log('draw a line');
+        // console.log('startX: ' + args.startX);
+        // console.log('startY: ' + args.startY);
+        // console.log('endX: ' + args.endX);
+        // console.log('endY: ' + args.endY);
 
+        //
+        const message = {
+            command: 'drawLine',
+            args
+        };
+        window.parent.postMessage({
+            message
+        }, 'http://localhost:8080');
     }
 
     /**
      * The pen "clear" block clears the pen layer's contents.
      */
-    clear () {
+    clear() {
         const penSkinId = this._getPenLayerID();
         if (penSkinId >= 0) {
             this.runtime.renderer.penClear(penSkinId);

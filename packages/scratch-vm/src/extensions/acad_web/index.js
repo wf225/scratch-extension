@@ -355,7 +355,6 @@ class Scratch3AcadWebBlocks {
         // console.log('endX: ' + args.endX);
         // console.log('endY: ' + args.endY);
 
-        //
         const message = {
             command: 'drawLine',
             args
@@ -369,11 +368,17 @@ class Scratch3AcadWebBlocks {
      */
     drawACircle(args, util) {
         console.log('draw a circle');
-        console.log('centerX: ' + args.centerX);
-        console.log('centerY: ' + args.centerY);
-        console.log('radius: ' + args.radius);
+        // console.log('centerX: ' + args.centerX);
+        // console.log('centerY: ' + args.centerY);
+        // console.log('radius: ' + args.radius);
         
-
+        const message = {
+            command: 'drawCircle',
+            args
+        };
+        window.parent.postMessage({
+            message
+        }, 'http://localhost:8080');
     }
     /**
      * The pen "clear" block clears the pen layer's contents.
